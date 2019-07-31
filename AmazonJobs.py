@@ -11,9 +11,11 @@ class JobsDictionary:
     This controls also importing existing jobs from CSV file, and then exporting out the jobs when processes are done.
     """
     def __init__(self):
+        """ Initialize the dictionary, but does nothing else at creation (yet)."""
         self.jobs_dictionary = dict()
 
     def check_exist(self, key):
+        """ Check if the specified key exists (Return True), or not (Return False."""
         if key in self.jobs_dictionary.keys():
             return True
         else:
@@ -21,7 +23,7 @@ class JobsDictionary:
 
     def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_interest=True,
                     job_status=True, job_next_step=""):
-
+        """ Add the job posting into the dictionary, using a nested dictionary."""
         self.jobs_dictionary[job_id] = {
             "Title": job_title,
             "Location": job_location,
@@ -33,11 +35,12 @@ class JobsDictionary:
         }
 
     def dump_dictionary(self):
-        """ Simply prints out the contents of the dictionary to shell"""
+        """ Simply prints out the contents of the dictionary to shell."""
         for i in self.jobs_dictionary:
             print(i, self.jobs_dictionary[i])
 
     def write_dictionary(self, file):
+        """ Write out the dictionary to the specified file, overwriting it in the process."""
         exist = path.exists(file)
         if exist:
             remove(file)
@@ -52,22 +55,27 @@ class JobsDictionary:
                     self.jobs_dictionary[i]['Next Step']+"\n")
 
     def import_dictionary(self, file):
+        """ Import the dictionary from the specified file"""
         exist = path.exists(file)
         if exist:
+            # If file exists, import it.
             with open(file, "r") as csvfile:
                 text = reader(csvfile)
                 row_id = 0
                 for row in text:
                     if row_id > 0:
+                        # Set the new field to False for any imports, to distinguish between old and new entries.
                         self.add_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], False, row[7])
                     else:
                         row_id = row_id+1
         else:
+            # If path does not exist, it simply prints that it is skipping the file and continues without delay.
             print("No import file, skipping import")
             pass
 
 
 def get_job_category(jobid):
+    """ Gathers the Job Category by looking up the given JobID."""
     job_specific_root_url = "https://amazon.jobs/en/jobs/"
     job_url = job_specific_root_url + jobid.strip() + "/"
     job_browser = webdriver.PhantomJS()
@@ -79,6 +87,7 @@ def get_job_category(jobid):
 
 
 def search_for_jobs(url, dictionary):
+    """ Search for jobs using the specified URL as the query, and the specified dictionary as the output location."""
     offset = 0  # Set an initial offset of 0, increase from there.
     page_empty = False
     while page_empty is False:
