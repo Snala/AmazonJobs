@@ -21,7 +21,7 @@ class JobsDictionary:
         else:
             return False
 
-    def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_interest=True,
+    def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_team,  job_interest=True,
                     job_status=True, job_next_step=""):
         """ Add the job posting into the dictionary, using a nested dictionary."""
         self.jobs_dictionary[job_id] = {
@@ -29,6 +29,7 @@ class JobsDictionary:
             "Location": job_location,
             "Posted": job_post_date,
             "Category": job_category,
+            "Team": job_team,
             "Interest": job_interest,
             "New": job_status,
             "Next Step": job_next_step
@@ -47,12 +48,12 @@ class JobsDictionary:
             exist = path.exists(file)
         f = open(file, "a+")
         if exist is False:
-            f.write("Job ID, Title, Location, Posted, Category, Interest, New, Next Step\n")
+            f.write("Job ID, Title, Location, Posted, Category, Team, Interest, New, Next Step\n")
         for i in self.jobs_dictionary:
             f.write(i+","+self.jobs_dictionary[i]['Title']+","+self.jobs_dictionary[i]['Location']+"," +
-                    self.jobs_dictionary[i]['Posted']+","+self.jobs_dictionary[i]['Category']+","+str(
-                self.jobs_dictionary[i]['Interest'])+","+str(self.jobs_dictionary[i]['New'])+"," +
-                    self.jobs_dictionary[i]['Next Step']+"\n")
+                    self.jobs_dictionary[i]['Posted']+","+self.jobs_dictionary[i]['Category']+","+
+                    self.jobs_dictionary[i]['Team']+","+str(self.jobs_dictionary[i]['Interest'])+","+
+                    str(self.jobs_dictionary[i]['New'])+"," +self.jobs_dictionary[i]['Next Step']+"\n")
 
     def import_dictionary(self, file):
         """ Import the dictionary from the specified file"""
@@ -65,8 +66,9 @@ class JobsDictionary:
                 for row in text:
                     if row_id > 0:
                         # Set the new field to False for any imports, to distinguish between old and new entries.
-                        self.add_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], False, row[7])
+                        self.add_to_dict(row[0], row[1], row[2], row[3], row[4], row[5], row[6], False, row[8])
                     else:
+                        # Done to skip the header row
                         row_id = row_id+1
         else:
             # If path does not exist, it simply prints that it is skipping the file and continues without delay.
@@ -74,16 +76,31 @@ class JobsDictionary:
             pass
 
 
-def get_job_category(jobid):
-    """ Gathers the Job Category by looking up the given JobID."""
-    job_specific_root_url = "https://amazon.jobs/en/jobs/"
-    job_url = job_specific_root_url + jobid.strip() + "/"
-    job_browser = webdriver.PhantomJS()
-    job_browser.get(job_url)
-    page = BeautifulSoup(job_browser.page_source, "html.parser")
-    job_category = page.find("div", class_="association job-category-icon col-12").find(text=True)
-    job_browser.close()
-    return str(job_category).replace(',', '').strip()
+class JobDetails:
+    def __init__(self, jobid):
+        job_specific_root_url = "https://amazon.jobs/en/jobs/"
+        self.job_browser = webdriver.PhantomJS()
+        job_url = job_specific_root_url + str(jobid).strip() + "/"
+        self.job_browser.get(job_url)
+        self.page = BeautifulSoup(self.job_browser.page_source, "html.parser")
+
+    def get_job_category(self):
+        """ Gathers the Job Category by looking up the given JobID."""
+        job_category = self.page.find("div", class_="association job-category-icon col-12").find(text=True)
+        if job_category == "None":
+            job_category = ""
+        return str(job_category).replace(',', '').strip()
+
+    def get_job_team(self):
+        """Gathers the Job team by looking up the given JobID"""
+        try:
+            team_icon = self.page.find("div", class_="association team-icon col-12").find(text=True)
+        except AttributeError:
+            team_icon = ""
+        return str(team_icon).replace(',', '').strip()
+
+    def cleanup(self):
+        self.job_browser.close()
 
 
 def search_for_jobs(url, dictionary):
@@ -106,8 +123,11 @@ def search_for_jobs(url, dictionary):
                 job_location = job_location[0].strip().replace(', ', '/')
                 job_posted_date = job.find("h2", class_="posting-date").find(text=True).replace(',', '').strip(
                     'Posted ')
-                job_category = get_job_category(job_id)
-                dictionary.add_to_dict(job_id, job_title, job_location, job_posted_date, job_category)
+                job_details = JobDetails(job_id)
+                job_category = job_details.get_job_category()
+                job_team = job_details.get_job_team()
+                job_details.cleanup()
+                dictionary.add_to_dict(job_id, job_title, job_location, job_posted_date, job_category, job_team)
         browser.close()
 
 
