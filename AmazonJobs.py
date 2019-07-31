@@ -70,10 +70,11 @@ class JobsDictionary:
                     else:
                         # Done to skip the header row
                         row_id = row_id+1
+                csvfile.close()
+            print("Dictionary import complete & successful.")
         else:
             # If path does not exist, it simply prints that it is skipping the file and continues without delay.
             print("No import file, skipping import")
-            pass
 
 
 class JobDetails:
@@ -98,6 +99,11 @@ class JobDetails:
         except AttributeError:
             team_icon = ""
         return str(team_icon).replace(',', '').strip()
+
+    def get_job_description(self):
+        """Gathers the Job Description by looking up the given JobID."""
+        job_desc = self.page.find("div", class_="section description").find("p").find(text=True)
+        return str(job_desc).replace(',', '').strip()
 
     def cleanup(self):
         self.job_browser.close()
@@ -136,9 +142,9 @@ def main():
                       "&job_type=Full-Time&loc_query=Greater+Seattle+Area%2C+WA%2C+United+States&latitude=&longitude=" \
                       "&loc_group_id=seattle-metro&invalid_location=false&country=&city=&region=&county="
 
-    search_terms_list = ('Quality Assurance Engineer', 'QA Engineer', "Quality Assurance Technician",
-                         "Hardware QA Lab Technician", "Hardware Quality Engineer")
-    # search_terms_list = ('Quality Assurance Engineer IMDb TV', 'Sr. QAE, IMDb TV')  # Test that yields few results
+    #search_terms_list = ('Quality Assurance Engineer', 'QA Engineer', "Quality Assurance Technician",
+    #                     "Hardware QA Lab Technician", "Hardware Quality Engineer")
+    search_terms_list = ('Quality Assurance Engineer IMDb TV', 'Sr. QAE, IMDb TV')  # Test that yields few results
     file_to_use = 'amazon.csv'
     search_url_list = []
     full_jobs_dict = JobsDictionary()
