@@ -21,7 +21,7 @@ class JobsDictionary:
         else:
             return False
 
-    def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_team,  job_interest=True,
+    def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_team, job_interest=True,
                     job_status=True, job_next_step=""):
         """ Add the job posting into the dictionary, using a nested dictionary."""
         self.jobs_dictionary[job_id] = {
@@ -51,9 +51,9 @@ class JobsDictionary:
             f.write("Job ID, Title, Location, Posted, Category, Team, Interest, New, Next Step\n")
         for i in self.jobs_dictionary:
             f.write(i+","+self.jobs_dictionary[i]['Title']+","+self.jobs_dictionary[i]['Location']+"," +
-                    self.jobs_dictionary[i]['Posted']+","+self.jobs_dictionary[i]['Category']+","+
-                    self.jobs_dictionary[i]['Team']+","+str(self.jobs_dictionary[i]['Interest'])+","+
-                    str(self.jobs_dictionary[i]['New'])+"," +self.jobs_dictionary[i]['Next Step']+"\n")
+                    self.jobs_dictionary[i]['Posted']+","+self.jobs_dictionary[i]['Category']+"," +
+                    self.jobs_dictionary[i]['Team']+","+str(self.jobs_dictionary[i]['Interest'])+"," +
+                    str(self.jobs_dictionary[i]['New'])+"," + self.jobs_dictionary[i]['Next Step']+"\n")
 
     def import_dictionary(self, file):
         """ Import the dictionary from the specified file"""
@@ -102,7 +102,10 @@ class JobDetails:
 
     def get_job_description(self):
         """Gathers the Job Description by looking up the given JobID."""
-        job_desc = self.page.find("div", class_="section description").find("p").find(text=True)
+        try:
+            job_desc = self.page.find("div", class_="section description").find("p").find(text=True)
+        except AttributeError:
+            job_desc = ""
         return str(job_desc).replace(',', '').strip()
 
     def cleanup(self):
@@ -142,9 +145,9 @@ def main():
                       "&job_type=Full-Time&loc_query=Greater+Seattle+Area%2C+WA%2C+United+States&latitude=&longitude=" \
                       "&loc_group_id=seattle-metro&invalid_location=false&country=&city=&region=&county="
 
-    #search_terms_list = ('Quality Assurance Engineer', 'QA Engineer', "Quality Assurance Technician",
-    #                     "Hardware QA Lab Technician", "Hardware Quality Engineer")
-    search_terms_list = ('Quality Assurance Engineer IMDb TV', 'Sr. QAE, IMDb TV')  # Test that yields few results
+    search_terms_list = ('Quality Assurance Engineer', 'QA Engineer', "Quality Assurance Technician",
+                         "Hardware QA Lab Technician", "Hardware Quality Engineer")
+    # search_terms_list = ('Quality Assurance Engineer IMDb TV', 'Sr. QAE, IMDb TV')  # Test that yields few results
     file_to_use = 'amazon.csv'
     search_url_list = []
     full_jobs_dict = JobsDictionary()
