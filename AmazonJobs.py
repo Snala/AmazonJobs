@@ -24,15 +24,15 @@ class JobsDictionary:
     def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_team, job_interest=True,
                     job_status=True, job_next_step=""):
         """ Add the job posting into the dictionary, using a nested dictionary."""
-        self.jobs_dictionary[job_id] = {
-            "Title": job_title,
-            "Location": job_location,
-            "Posted": job_post_date,
-            "Category": job_category,
-            "Team": job_team,
-            "Interest": job_interest,
-            "New": job_status,
-            "Next Step": job_next_step
+        self.jobs_dictionary[int(str(job_id).strip())] = {
+            "Title": str(job_title).strip(),
+            "Location": str(job_location).strip(),
+            "Posted": str(job_post_date).strip(),
+            "Category": str(job_category).strip(),
+            "Team": str(job_team).strip(),
+            "Interest": str(job_interest).strip(),
+            "New": str(job_status).strip(),
+            "Next Step": str(job_next_step).strip()
         }
 
     def dump_dictionary(self):
@@ -84,6 +84,7 @@ class JobDetails:
         job_url = job_specific_root_url + str(jobid).strip() + "/"
         self.job_browser.get(job_url)
         self.page = BeautifulSoup(self.job_browser.page_source, "html.parser")
+        print("Getting Details for {}.".format(jobid))
 
     def get_job_category(self):
         """ Gathers the Job Category by looking up the given JobID."""
@@ -119,14 +120,17 @@ def search_for_jobs(url, dictionary):
     while page_empty is False:
         browser = webdriver.PhantomJS()
         browser.get(url.replace("<offset>", str(offset)))
+        print("Getting Listing Page {}".format(offset))
         page = BeautifulSoup(browser.page_source, "html.parser")
         if page.find("div", id="search-empty"):
             break  # Break out of the loop if the page is empty.
         jobs_list = page.find_all("div", class_="job")
         for job in jobs_list:
-            job_id = job.attrs.get('data-job-id', [])
+            job_id = int(str(job.attrs.get('data-job-id', [])).strip())
+            print('Checking if {} is in dictionary.'.format(job_id))
             offset = offset + 1
             if not dictionary.check_exist(job_id):
+                print('Job ID: {} not found in dictionary.'.format(job_id))
                 job_title = job.find("h3", class_="job-title").find(text=True).replace(',', '')
                 job_location = job.find("p", class_="location-and-id").find(text=True).split('|')
                 job_location = job_location[0].strip().replace(', ', '/')
@@ -137,6 +141,8 @@ def search_for_jobs(url, dictionary):
                 job_team = job_details.get_job_team()
                 job_details.cleanup()
                 dictionary.add_to_dict(job_id, job_title, job_location, job_posted_date, job_category, job_team)
+            else:
+                print("Job {} exists, skipping.".format(job_id))
         browser.close()
 
 
@@ -146,7 +152,7 @@ def main():
                       "&loc_group_id=seattle-metro&invalid_location=false&country=&city=&region=&county="
 
     search_terms_list = ('Quality Assurance Engineer', 'QA Engineer', "Quality Assurance Technician",
-                         "Hardware QA Lab Technician", "Hardware Quality Engineer")
+                         "Hardware QA Lab Technician ", "Hardware Quality Engineer")
     # search_terms_list = ('Quality Assurance Engineer IMDb TV', 'Sr. QAE, IMDb TV')  # Test that yields few results
     file_to_use = 'amazon.csv'
     search_url_list = []

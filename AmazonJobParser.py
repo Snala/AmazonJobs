@@ -17,25 +17,26 @@ def main():
             wrapper = TextWrapper(width=100)
             description = job_details.get_job_description()
             if description == "":
-                interest = "n"
+                parse_dictionary.jobs_dictionary[job]['Interest'] = False
+                print("Job has closed. Setting to no interest and moving on.")
             else:
                 description = wrapper.wrap(description)
                 for i in description:
                     print(i)
                 interest = str()
-            while interest != "y" or interest != "n":
-                interest = str(input("\nAre you still interested? (y/n/save)")).lower()
-                if interest == "y":
-                    parse_dictionary.jobs_dictionary[job]['Interest'] = True
-                    break
-                elif interest == "n":
-                    parse_dictionary.jobs_dictionary[job]['Interest'] = False
-                    break
-                elif interest == "save":
-                    parse_dictionary.write_dictionary(file_name)
-                    print("Dictionary saved to {}".format(file_name))
-                else:
-                    pass
+                while interest != "y" or interest != "n":
+                    interest = str(input("\nAre you still interested? (y/n/save)")).lower()
+                    if interest == "y":
+                        parse_dictionary.jobs_dictionary[job]['Interest'] = True
+                        break
+                    elif interest == "n":
+                        parse_dictionary.jobs_dictionary[job]['Interest'] = False
+                        break
+                    elif interest == "save":
+                        parse_dictionary.write_dictionary(file_name)
+                        print("Dictionary saved to {}".format(file_name))
+                    else:
+                        pass
         print("You have reviewed {} jobs.\n".format(str(reviewed)))
     print("Complete, writing out result!")
     parse_dictionary.write_dictionary(file_name)
