@@ -50,10 +50,10 @@ class JobsDictionary:
         if exist is False:
             f.write("Job ID, Title, Location, Posted, Category, Team, Interest, New, Next Step\n")
         for i in self.jobs_dictionary:
-            f.write(i+","+self.jobs_dictionary[i]['Title']+","+self.jobs_dictionary[i]['Location']+"," +
-                    self.jobs_dictionary[i]['Posted']+","+self.jobs_dictionary[i]['Category']+"," +
-                    self.jobs_dictionary[i]['Team']+","+str(self.jobs_dictionary[i]['Interest'])+"," +
-                    str(self.jobs_dictionary[i]['New'])+"," + self.jobs_dictionary[i]['Next Step']+"\n")
+            f.write(str(i)+","+str(self.jobs_dictionary[i]['Title'])+","+str(self.jobs_dictionary[i]['Location'])+"," +
+                    str(self.jobs_dictionary[i]['Posted'])+","+str(self.jobs_dictionary[i]['Category'])+"," +
+                    str(self.jobs_dictionary[i]['Team'])+","+str(self.jobs_dictionary[i]['Interest'])+"," +
+                    str(self.jobs_dictionary[i]['New'])+"," + str(self.jobs_dictionary[i]['Next Step'])+"\n")
 
     def import_dictionary(self, file):
         """ Import the dictionary from the specified file"""
