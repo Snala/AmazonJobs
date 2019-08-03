@@ -4,7 +4,8 @@ from textwrap import TextWrapper
 
 def main():
     file_name = "amazon.csv"
-    banned_terms = ['manager', 'senior', 'sr', 'III']
+    banned_terms = ['manager', 'senior', 'sr', 'III', 'aerospace', 'salesforce', 'leader', 'head', 'tpm', 'robotics',
+                    'management', 'mgr', 'robotic', 'buyer']
     parse_dictionary = AmazonJobs.JobsDictionary()
     print("Attempting to import dictionary from {}".format(file_name))
     parse_dictionary.import_dictionary(file_name)
@@ -44,6 +45,8 @@ def main():
                         else:
                             pass
                 job_details.cleanup()
+        else:
+            print('Not Interested in JobID {}, skipping.'.format(str(job)))
         print("Processed {} jobs.\n".format(str(reviewed)))
     print("Complete, writing out result!")
     parse_dictionary.write_dictionary(file_name)

@@ -23,6 +23,14 @@ class JobsDictionary:
 
     def add_to_dict(self, job_id, job_title, job_location, job_post_date, job_category, job_team, job_interest=True,
                     job_status=True, job_next_step=""):
+        job_interest = str(job_interest).strip().upper()
+        if job_interest == 'TRUE':
+            job_interest = bool(True)
+        elif job_interest == 'FALSE':
+            job_interest = bool(False)
+        else:
+            raise ValueError('Incorrect value for job interest, must be TRUE or False.  Is {} of type {}'.format(
+                job_interest, type(job_interest)))
         """ Add the job posting into the dictionary, using a nested dictionary."""
         self.jobs_dictionary[int(str(job_id).strip())] = {
             "Title": str(job_title).strip(),
@@ -30,7 +38,7 @@ class JobsDictionary:
             "Posted": str(job_post_date).strip(),
             "Category": str(job_category).strip(),
             "Team": str(job_team).strip(),
-            "Interest": str(job_interest).strip(),
+            "Interest": bool(job_interest),
             "New": str(job_status).strip(),
             "Next Step": str(job_next_step).strip()
         }
