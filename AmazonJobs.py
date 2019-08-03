@@ -15,7 +15,7 @@ class JobsDictionary:
         self.jobs_dictionary = dict()
 
     def check_exist(self, key):
-        """ Check if the specified key exists (Return True), or not (Return False."""
+        """ Check if the specified key exists (Return True), or not (Return False)."""
         if key in self.jobs_dictionary.keys():
             return True
         else:
