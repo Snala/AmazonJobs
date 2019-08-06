@@ -160,7 +160,7 @@ def main():
                       "&loc_group_id=seattle-metro&invalid_location=false&country=&city=&region=&county="
 
     search_terms_list = ('Quality Assurance Engineer', 'QA Engineer', "Quality Assurance Technician",
-                         "Hardware QA Lab Technician ", "Hardware Quality Engineer")
+                         "Hardware QA Lab Technician ", "Hardware Quality Engineer", "VLT Technical Assistant")
     # search_terms_list = ('Quality Assurance Engineer IMDb TV', 'Sr. QAE, IMDb TV')  # Test that yields few results
     file_to_use = 'amazon.csv'
     search_url_list = []

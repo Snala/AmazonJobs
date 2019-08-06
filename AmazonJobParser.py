@@ -5,7 +5,7 @@ from textwrap import TextWrapper
 def main():
     file_name = "amazon.csv"
     banned_terms = ['manager', 'senior', 'sr', 'III', 'aerospace', 'salesforce', 'leader', 'head', 'tpm', 'robotics',
-                    'management', 'mgr', 'robotic', 'buyer']
+                    'management', 'mgr', 'robotic', 'buyer', 'supervisor']
     parse_dictionary = AmazonJobs.JobsDictionary()
     print("Attempting to import dictionary from {}".format(file_name))
     parse_dictionary.import_dictionary(file_name)
