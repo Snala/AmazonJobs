@@ -27,7 +27,8 @@ def main():
                     parse_dictionary.jobs_dictionary[job]['Interest'] = False
                     print("Job has closed. Setting to no interest and moving on.")
                 else:
-                    print("\nJob Title: {}, ID#: {}\n".format(job_title, str(job)))
+                    print("\nJob Title: {}, ID#: {}".format(job_title, str(job)))
+                    print("Next Steps & Notes: {}\n".format(parse_dictionary.jobs_dictionary[job]['Next Step']))
                     for i in description:
                         print(i)
                     interest = str()
@@ -35,6 +36,7 @@ def main():
                         interest = str(input("\nAre you still interested? (y/n/save)")).lower()
                         if interest == "y":
                             parse_dictionary.jobs_dictionary[job]['Interest'] = True
+                            parse_dictionary.jobs_dictionary[job]['Team'] = job_details.get_job_team()
                             break
                         elif interest == "n":
                             parse_dictionary.jobs_dictionary[job]['Interest'] = False
@@ -50,6 +52,8 @@ def main():
         print("Processed {} jobs.\n".format(str(reviewed)))
     print("Complete, writing out result!")
     parse_dictionary.write_dictionary(file_name)
+    print("Done. Bye!")
+    exit(0)
 
 
 if __name__ == '__main__':
